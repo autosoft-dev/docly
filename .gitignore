@@ -144,3 +144,7 @@ cython_debug/
 # Python-version
 
 .python-version
+
+# VScode workspace
+
+*.code-workspace
