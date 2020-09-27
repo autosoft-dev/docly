@@ -5,12 +5,25 @@
 """Basic tokenizer that splits text into alpha-numeric tokens and
 non-whitespace tokens.
 """
+from tokenize import tokenize
+from io import BytesIO
 
 import logging
 from .tokenizer import Tokens, Tokenizer
 import re
 
 logger = logging.getLogger(__name__)
+
+
+is_valid_tok = lambda x: x != ":" and x != "(" and x != ")" and x != "=" and x != "==" and x != ","
+
+
+def tokenize_code_string(text):
+    code_tokens = []
+    for tok in tokenize(BytesIO(text.encode('utf-8')).readline):
+        if tok.string.strip() != "" and tok.string.strip() != "utf-8" and is_valid_tok(tok.string.strip()):
+            code_tokens.append(tok.string.strip().lower())
+    return code_tokens
 
 
 def tokenize_with_camel_case(token):
@@ -42,7 +55,7 @@ class CodeTokenizer(Tokenizer):
         self.annotators = set()
 
     def tokenize(self, text):
-        tokens = text.split()
+        tokens = tokenize_code_string(text)
         snake_case_tokenized = []
         if self.snake_case:
             for token in tokens:

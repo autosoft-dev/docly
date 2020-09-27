@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 
 from .dataset import CommentDataset
 from .model import Code2NaturalLanguage
-from .symbolic import filter_translation_output
+from .symbolic import format_translation_output
 from c2nl.objects import Code
 from c2nl.inputters.dataset import CommentDataset as CommentDataset
 from c2nl.inputters.vector import batchify
@@ -69,7 +69,7 @@ def predict_docstring(model: Code2NaturalLanguage, code_tokens: List[str], raw_c
                             global_scorer=scorer,
                             min_length=2,
                             stepwise_penalty=False,
-                            block_ngram_repeat=1,
+                            block_ngram_repeat=3,
                             ignore_when_blocking=[],
                             replace_unk=True)
     builder = TranslationBuilder(model.tgt_dict, n_best=1, replace_unk=True)
@@ -92,4 +92,6 @@ def predict_docstring(model: Code2NaturalLanguage, code_tokens: List[str], raw_c
         ret = translator.translate_batch(batch_inputs)
         targets = [[summ] for summ in ex['summ_text']]
         translation = builder.from_batch(ret, ex['code_tokens'], targets, ex['src_vocab'])
-        return " ".join(filter_translation_output(translation[0].pred_sents[0]))
+
+        return (" ".join(format_translation_output(translation[0].pred_sents[0])), 
+                translation[0].pred_scores[0].detach().numpy())

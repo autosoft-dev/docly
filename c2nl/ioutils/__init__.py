@@ -20,6 +20,15 @@ def is_dir(file_or_dir_path):
         return False
 
 
+def is_python_file(file_path):
+    if isinstance(file_path, Path):
+        return file_path.suffix == ".py"
+    elif isinstance(file_path, str):
+        return Path(file_path).suffix == ".py"
+    else:
+        return False
+
+
 def print_on_console(text, color="blue"):
     if color == "blue":
         puts(colored.blue(text))
@@ -61,9 +70,10 @@ def check_out_path(target_path: Path):
     """"
     This function recursively yields all contents of a pathlib.Path object
     """
+    yield target_path
     for file in target_path.iterdir():
         if file.is_dir():
-            check_out_path(file)
+            yield from check_out_path(file)
         else:
             yield file.absolute()
     

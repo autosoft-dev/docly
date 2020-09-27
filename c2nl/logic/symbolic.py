@@ -1,7 +1,7 @@
 from typing import List
 
 
-def filter_translation_output(translation_output: List[str]):
+def format_translation_output(translation_output: List[str]):
     output = []
     for i in range(0, len(translation_output)):
         if output:
@@ -9,4 +9,9 @@ def filter_translation_output(translation_output: List[str]):
                 output.append(translation_output[i])
         else:
             output.append(translation_output[i])
+    
+    if output[-1] == ".":
+        output[-2] = output[-2] + "."
+        output.pop()
+    
     return output
