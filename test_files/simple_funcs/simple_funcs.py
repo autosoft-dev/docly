@@ -1,5 +1,5 @@
-def add (a, b):
-    return a + b
+def add(a, b):
+    return a * b
 
 
 def check_even_numbers_in_a_list (base_list):

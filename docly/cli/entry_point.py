@@ -8,6 +8,7 @@ from .args import setup_cmdline_args
 from .setup_env import inspect_and_download_latest_model, inspect_and_download_latest_tslibs
 from docly.ioutils import print_on_console, is_dir, check_out_path, process_file, is_python_file
 from docly.ioutils.table_printer import print_results_as_table
+from docly.logic.logic_main import load_model, predict_docstring
 
 transformers.logger.setLevel(transformers.logging.CRITICAL)
 
@@ -35,22 +36,22 @@ def main():
         print_on_console("===== OS version not supported =====", color="red")
         return
 
-    # print_on_console("Loading Engine. Please wait", color="green")
-    # model = load_model(str(ROOT / "model"/ "code2doc_py.mdl"))
-    # print_on_console("Engine Loaded. Processing files", color="green")
-    # ts_lib_path = str(ROOT / "tslibs" / tslib_file)
-    # table_rows = []
-    # for file in args.files:
-    #     f_path = Path(file)
-    #     if is_dir(file):
-    #         for f in check_out_path(f_path):
-    #             if not is_dir(f) and is_python_file(f):
-    #                 for code_tokens, raw_code, start_index, function_name in process_file(f, ts_lib_path):
-    #                     docstr, score = predict_docstring(model, code_tokens, raw_code)
-    #                     table_rows.append([f.name, function_name, docstr, round((-1) * score, 2)])
-    #     else:
-    #         if is_python_file(f_path):
-    #             for code_tokens, raw_code, start_index, function_name in process_file(f_path, ts_lib_path):
-    #                 docstr, score = predict_docstring(model, code_tokens, raw_code)
-    #                 table_rows.append([f_path.name, function_name, docstr,  round((-1) * score, 2)])
-    # print_results_as_table(table_rows)
+    print_on_console("Loading Engine. Please wait", color="green")
+    model, tokenizer = load_model(str(ROOT / "model"/ "pytorch_model.bin"))
+    print_on_console("Engine Loaded. Processing files", color="green")
+    ts_lib_path = str(ROOT / "tslibs" / tslib_file)
+    table_rows = []
+    for file in args.files:
+        f_path = Path(file)
+        if is_dir(file):
+            for f in check_out_path(f_path):
+                if not is_dir(f) and is_python_file(f):
+                    for code_tokens, raw_code, start_index, function_name in process_file(f, ts_lib_path):
+                        docstr = predict_docstring(model, tokenizer, code_tokens, raw_code)
+                        table_rows.append([f.name, function_name, docstr])
+        else:
+            if is_python_file(f_path):
+                for code_tokens, raw_code, start_index, function_name in process_file(f_path, ts_lib_path):
+                    docstr = predict_docstring(model, tokenizer, code_tokens, raw_code)
+                    table_rows.append([f_path.name, function_name, docstr])
+    print_results_as_table(table_rows)
