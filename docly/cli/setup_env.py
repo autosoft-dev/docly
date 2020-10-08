@@ -2,13 +2,13 @@ import os
 from pathlib import Path
 import platform
 
-from c2nl.ioutils import download_from_url, print_on_console
+from docly.ioutils import download_from_url, print_on_console
 
 SUPPORTED_PLATFORMS = ["linux", "darwin"]
 
 
 def inspect_and_download_latest_model(model_root: Path, download_url: str) -> bool:
-    model_file = "code2doc_py.mdl"
+    model_file = "pytorch_model.bin"
 
     if not model_root.exists():
         os.makedirs(str(model_root))

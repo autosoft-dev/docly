@@ -29,6 +29,6 @@ install_requires=["tqdm", "requests", "torch",
                   "pyfiglet", "clint", "dpu-utils", "numpy", 
                   "PrettyTable", "nltk"],
 entry_points = {
-    'console_scripts': ['docly-gen=c2nl.cli.entry_point:main'],
+    'console_scripts': ['docly-gen=docly.cli.entry_point:main'],
 },
 )

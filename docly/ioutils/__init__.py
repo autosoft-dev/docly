@@ -6,8 +6,9 @@ import shutil
 from tqdm import tqdm
 from clint.textui import puts, colored
 
-from c2nl.parser import parser as py_parser
-from c2nl.tokenizers import CodeTokenizer
+from docly.parser import parser as py_parser
+from docly.tokenizers import tokenize_code_string
+
 # from c2nl.objects import Code
 
 
@@ -80,8 +81,6 @@ def check_out_path(target_path: Path):
 
 def process_file(file_path: Path, ts_lib_path: str):
     result, parser_obj = py_parser.parse(file_path, ts_lib_path)
-    tokenizer = CodeTokenizer()
-    # code = Code()
     if result:
         for func_name, data in py_parser.get_func_body_and_docstr(parser_obj):
             # print(py_toeknizer.tokenize_code_string(func_body))
@@ -89,4 +88,4 @@ def process_file(file_path: Path, ts_lib_path: str):
             # code.text = func_body
             (func_body, docstr), start, end = data
             ret_start = (start[0]+1, start[1])
-            yield tokenizer.tokenize(func_body).data, func_body, ret_start, func_name
+            yield tokenize_code_string(func_body), func_body, ret_start, func_name
