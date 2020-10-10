@@ -1,5 +1,6 @@
 from pathlib import Path
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+import time
 
 from pyfiglet import Figlet
 import transformers
@@ -30,6 +31,16 @@ def _print_welcome():
     print(f.renderText('Docly'))
 
 
+# def _predict_docstrings_from_file(f_path: Path, ts_lib_path: str, model: object, tokenizer: object):
+#     func_names = []
+#     ct = []
+#     for code_tokens, raw_code, start_index, function_name in process_file(f_path, ts_lib_path):
+#         func_names.append(func_names)
+#         ct.append(code_tokens)
+#     docstrs = predict_docstring(model, tokenizer, ct)
+#     print(docstrs)
+
+
 def main():
     _print_welcome()
     
@@ -48,41 +59,45 @@ def main():
     print_on_console("Engine Loaded. Processing files", color="green")
     ts_lib_path = str(ROOT / "tslibs" / tslib_file)
     table_rows = []
+    docstr_loc = {}
 
     for file in args.files:
         f_path = Path(file)
         if is_dir(file):
             for f in check_out_path(f_path):
-                docstr_loc = {}
                 if not is_dir(f) and is_python_file(f):
                     for code_tokens, raw_code, start_index, function_name in process_file(f, ts_lib_path):
-                        docstr = predict_docstring(model, tokenizer, code_tokens, raw_code)
-                        docstr_loc[start_index] = docstr
+                        docstr = predict_docstring(model, tokenizer, [code_tokens])
+                        if docstr_loc.get(str(f)) is None:
+                            docstr_loc[str(f)] = [{start_index: docstr}]
+                        else:
+                            docstr_loc[str(f)].append({start_index: docstr})
                         table_rows.append([f.name, function_name, docstr])
-                    # print(docstr_loc)
         else:
             if is_python_file(f_path):
-                docstr_loc = {}
                 for code_tokens, raw_code, start_index, function_name in process_file(f_path, ts_lib_path):
-                    docstr = predict_docstring(model, tokenizer, code_tokens, raw_code)
-                    docstr_loc[start_index] = docstr
+                    docstr = predict_docstring(model, tokenizer, [code_tokens])
+                    if docstr_loc.get(str(f_path.absolute())) is None:
+                        docstr_loc[str(f_path.absolute())] = [{start_index: docstr}]
+                    else:
+                        docstr_loc[str(f_path.absolute())].append({start_index: docstr})
                     table_rows.append([f_path.name, function_name, docstr])
-                # print(docstr_loc)
-    if args.print_report:
-        print_results_as_table(table_rows)
-    if args.generate_diff:
-        if not args.print_report:
-            choice = query_yes_no("The diff has been generated, do you want to see the suggestions?")
-            if choice:
-                print_results_as_table(table_rows)
-                choice = query_yes_no("Do you want to apply the suggestions?")
-            else:
-                choice = query_yes_no("Do you want to apply the suggestions?")
-        else:
-            choice = query_yes_no("Do you want to apply the suggestions?")
+    print(docstr_loc)
+    # if args.print_report:
+    #     print_results_as_table(table_rows)
+    # if args.generate_diff:
+    #     if not args.print_report:
+    #         choice = query_yes_no("The diff has been generated, do you want to see the suggestions?")
+    #         if choice:
+    #             print_results_as_table(table_rows)
+    #             choice = query_yes_no("Do you want to apply the suggestions?")
+    #         else:
+    #             choice = query_yes_no("Do you want to apply the suggestions?")
+    #     else:
+    #         choice = query_yes_no("Do you want to apply the suggestions?")
         
-        if choice:
-            print_on_console("Applying diff", color="green")
-            print_on_console("Diff applied. Good bye!", color="green")
-        else:
-            print_on_console("Good bye!", color="green")
+    #     if choice:
+    #         print_on_console("Applying diff", color="green")
+    #         print_on_console("Diff applied. Good bye!", color="green")
+    #     else:
+    #         print_on_console("Good bye!", color="green")

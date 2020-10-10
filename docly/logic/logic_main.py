@@ -49,7 +49,7 @@ def load_model(model_path):
     return model, tokenizer
 
 
-def predict_docstring(model, tokenizer, code_tokens, raw_code):
+def predict_docstring(model, tokenizer, code_tokens):
     examples = make_example(code_tokens)
     features = convert_examples_to_features(examples, tokenizer)
     all_source_ids = torch.tensor([f.source_ids for f in features], dtype=torch.long)
@@ -58,7 +58,7 @@ def predict_docstring(model, tokenizer, code_tokens, raw_code):
     eval_data = TensorDataset(all_source_ids,all_source_mask)
 
     eval_sampler = SequentialSampler(eval_data)
-    eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=1)
+    eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=len(code_tokens))
 
     p=[]
     for batch in eval_dataloader:
@@ -75,7 +75,8 @@ def predict_docstring(model, tokenizer, code_tokens, raw_code):
                     t=t[:t.index(0)]
                 text = tokenizer.decode(t,clean_up_tokenization_spaces=False)
                 p.append(text)
-            if p[-1] == ".":
-                p[-2] = p[-2].strip() + "."
-                p.pop()
-            return " ".join(p)
+            # if p[-1] == ".":
+            #     p[-2] = p[-2].strip() + "."
+            #     p.pop()
+            # return " ".join(p)
+    return p

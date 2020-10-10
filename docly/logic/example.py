@@ -15,7 +15,10 @@ class Example(object):
 
 def make_example(code_tokens):
     idx = random.randint(1, 100000)
-    ex = Example(idx=idx,
-                 source=" ".join(code_tokens),
-                 target="")
-    return [ex]
+    examples = []
+    for ct in code_tokens:
+        ex = Example(idx=idx,
+                    source=" ".join(ct),
+                    target="")
+        examples.append(ex)
+    return examples
