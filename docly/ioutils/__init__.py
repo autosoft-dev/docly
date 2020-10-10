@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import requests
 import shutil
+import sys
 
 from tqdm import tqdm
 from clint.textui import puts, colored
@@ -12,11 +13,11 @@ from docly.tokenizers import tokenize_code_string
 # from c2nl.objects import Code
 
 
-def is_dir(file_or_dir_path):
-    if isinstance(file_or_dir_path, Path):
-        return file_or_dir_path.is_dir()
-    elif isinstance(file_or_dir_path, str):
-        return Path(file_or_dir_path).is_dir()
+def is_dir(base_path):
+    if isinstance(base_path, Path):
+        return base_path.is_dir()
+    elif isinstance(base_path, str):
+        return Path(base_path).is_dir()
     else:
         return False
 
@@ -89,3 +90,36 @@ def process_file(file_path: Path, ts_lib_path: str):
             (func_body, docstr), start, end = data
             ret_start = (start[0]+1, start[1])
             yield tokenize_code_string(func_body), func_body, ret_start, func_name
+
+
+def query_yes_no(question, default="yes"):
+    """Ask a yes/no question and return their answer.
+
+    "question" is a string that is presented to the user.
+    "default" is the presumed answer if the user just hits <Enter>.
+        It must be "yes", "no", or None (meaning
+        an answer is required of the user).
+
+    The "answer" return value is True for "yes" or False for "no".
+    """
+    valid = {"yes": True, "y": True, "ye": True,
+             "no": False, "n": False}
+    if default is None:
+        prompt = " [y/n] "
+    elif default == "yes":
+        prompt = " [Y/n] "
+    elif default == "no":
+        prompt = " [y/N] "
+    else:
+        raise ValueError("invalid default answer: '{}}'".format(default))
+
+    while True:
+        print(question + prompt)
+        choice = input().lower()
+        if default is not None and choice == '':
+            return valid[default]
+        elif choice in valid:
+            return valid[choice]
+        else:
+            print("Please respond with 'yes' or 'no' "
+                             "(or 'y' or 'n').\n")

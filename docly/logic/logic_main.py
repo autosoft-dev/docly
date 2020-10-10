@@ -67,6 +67,7 @@ def predict_docstring(model, tokenizer, code_tokens, raw_code):
 
         with torch.no_grad():
             preds = model(source_ids=source_ids, source_mask=source_mask)
+
             for pred in preds:
                 t=pred[0].cpu().numpy()
                 t=list(t)

@@ -1,3 +1,19 @@
+import os
+
+a_string = """
+
+This is a multi line string
+
+"""
+
+VAR = 50  # A Variable
+
+#####################
+
+#### COMMENT #######
+
+####################
+
 def add(a, b):
     return a * b
 
