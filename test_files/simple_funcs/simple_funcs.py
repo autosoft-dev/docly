@@ -15,6 +15,8 @@ VAR = 50  # A Variable
 ####################
 
 def add(a, b):
+    def check_if_even(num):
+        return True if num % 2 == 0 else False
     return a * b
 
 
@@ -27,4 +29,11 @@ def open_file(file_path):
 
 
 def add_tensors (t, t1):
+    """
+    Add tensors to t1 .
+    """
     return t + t1
+
+
+if __name__ == "__main__":
+    print(add(12, 12))

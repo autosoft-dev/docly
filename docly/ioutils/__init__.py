@@ -89,7 +89,8 @@ def process_file(file_path: Path, ts_lib_path: str):
             # code.text = func_body
             (func_body, docstr), start, end = data
             ret_start = (start[0]+1, start[1])
-            yield tokenize_code_string(func_body), func_body, ret_start, func_name
+        
+            yield tokenize_code_string(func_body), func_body, ret_start, func_name, docstr.strip()
 
 
 def query_yes_no(question, default="yes"):
