@@ -9,7 +9,11 @@ Automatically generate docstrings for your python functions
 
 Requires python 3.6+
 
-First install setuptools-rust by `pip install setuptools-rust`
+First install setuptools-rust by 
+
+```
+pip install setuptools-rust
+```
 
 Then
 
