@@ -27,7 +27,7 @@ version="0.0.1",
 packages=find_packages(exclude=("tests",)),
 install_requires=["tqdm", "requests", "torch", 
                   "pyfiglet", "clint", "dpu-utils", "numpy", 
-                  "PrettyTable", "nltk"],
+                  "PrettyTable", "nltk", "transformers"],
 entry_points = {
     'console_scripts': ['docly-gen=docly.cli.docly_gen:main',
                         'docly-restore=docly.cli.docly_restore:main'],
