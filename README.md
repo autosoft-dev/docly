@@ -23,8 +23,6 @@ Then
 pip install docly
 ```
 
-_Please note that if you do not have the necessary engine (models) downloaded before running the command (which is going to be case the first time you run this command) then it will download and set them up. Which may take a bit of time_
-
 ## Using
 
 To generate comments - 
@@ -32,6 +30,8 @@ To generate comments -
 ```
 docly-gen /path/to/file_or_folder_with_python_files
 ```
+_Please note that if you do not have the necessary engine (models) downloaded before running the command (which is going to be case the first time you run this command) then it will download and set them up. Which may take a bit of time_
+
 
 It will produce something like this (Shown on a single file but you can run it on a directory full of files also)
 
