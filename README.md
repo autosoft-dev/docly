@@ -1,6 +1,6 @@
 # docly
 
-![Docly - Automatic source code commenting](docly.png "Automatic source code commenting")
+![Docly - Automatic source code commenting](https://github.com/autosoft-dev/docly/blob/master/logo/docly.png)
 
 [![parser: tree-hugger](https://img.shields.io/badge/parser-tree--hugger-lightgrey)](https://github.com/autosoft-dev/tree-hugger/)
 
