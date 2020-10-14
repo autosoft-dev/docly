@@ -23,6 +23,8 @@ Then
 pip install docly
 ```
 
+_Please note that if you do not have the necessary engine (models) downloaded before running the command (which is going to be case the first time you run this command) then it will download and set them up. Which may take a bit of time_
+
 ## Using
 
 To generate comments - 
