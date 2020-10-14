@@ -23,7 +23,7 @@ classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
 ],
-version="0.0.6",
+version="0.0.7",
 packages=find_packages(exclude=("tests",)),
 install_requires=["tqdm", "requests", "torch", 
                   "pyfiglet", "clint", "dpu-utils", "numpy", 

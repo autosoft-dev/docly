@@ -91,25 +91,32 @@ def main():
         if is_dir(file):
             for f in check_out_path(f_path):
                 if not is_dir(f) and is_python_file(f):
-                    for code_tokens, raw_code, start_index, function_name, ds in process_file(f, ts_lib_path):
+                    for code_tokens, params, start_index, function_name, ds in process_file(f, ts_lib_path):
                         if ds == "":
                             docstr = predict_docstring(model, tokenizer, [code_tokens])
                             if docstr_loc.get(str(f)) is None:
-                                docstr_loc[str(f)] = {start_index[0]: (start_index[1], docstr[0])}
+                                docstr_loc[str(f)] = {start_index[0]: (start_index[1], 
+                                                                       docstr[0], 
+                                                                       params)}
                             else:
-                                docstr_loc[str(f)][start_index[0]] = (start_index[1], docstr[0])
+                                docstr_loc[str(f)][start_index[0]] = (start_index[1], 
+                                                                      docstr[0],
+                                                                      params)
                             table_rows.append([f.name, function_name, docstr[0]])
         else:
             if is_python_file(f_path):
-                for code_tokens, raw_code, start_index, function_name, ds in process_file(f_path, ts_lib_path):
+                for code_tokens, params, start_index, function_name, ds in process_file(f_path, ts_lib_path):
                     if ds == "":
                         docstr = predict_docstring(model, tokenizer, [code_tokens])
                         if docstr_loc.get(str(f_path.absolute())) is None:
                             docstr_loc[str(f_path.absolute())] = {start_index[0]: 
-                                                                (start_index[1], docstr[0])}
+                                                                (start_index[1], 
+                                                                 docstr[0],
+                                                                 params)}
                         else:
                             docstr_loc[str(f_path.absolute())][start_index[0]] = (start_index[1], 
-                                                                                docstr[0])
+                                                                                  docstr[0],
+                                                                                  params)
                         table_rows.append([f_path.name, function_name, docstr[0]])
 
     _deal_with_result(args, table_rows, docstr_loc)
