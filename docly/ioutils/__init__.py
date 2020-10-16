@@ -3,14 +3,53 @@ from pathlib import Path
 import requests
 import shutil
 import sys
+from distutils.version import LooseVersion
+import time
 
 from tqdm import tqdm
 from clint.textui import puts, colored
 
 from docly.parser import parser as py_parser
 from docly.tokenizers import tokenize_code_string
+from docly import __version__
 
 # from c2nl.objects import Code
+# UPDATE_CHECK_URL = "http://3.80.2.138:8584/"
+UPDATE_CHECK_URL = "http://127.0.0.1:5000/vercheck/check-version/"
+
+interaction_cache = lambda : Path(Path.home() / ".docly" / "interaction_cache")
+
+
+def _compare_installed_version_with_latest(v1, v2):
+    try:
+        current_version = LooseVersion(v1)
+        latest_version = LooseVersion(v2)
+        assert current_version == latest_version
+        return True
+    except AssertionError:
+        return False
+
+
+def look_for_update():
+    with requests.sessions.Session() as s:
+        try:
+            r = s.get(UPDATE_CHECK_URL, timeout=2)
+            r.raise_for_status()
+            if not _compare_installed_version_with_latest(__version__, r.text):
+                i_c = interaction_cache()
+                return True
+            return False
+        except Exception:
+            i_c = interaction_cache()
+            if not i_c.exists():
+                os.mkdir(i_c)
+            if not (i_c / "icache.txt").exists():
+                with open((i_c / "icache.txt"), "w") as f:
+                    f.write(str(int(time.time())) + "\n")
+            else:
+                with open((i_c / "icache.txt"), "a") as f:
+                    f.write(str(int(time.time())) + "\n")
+            return False
 
 
 def is_dir(base_path):

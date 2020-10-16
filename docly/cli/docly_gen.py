@@ -12,7 +12,8 @@ from docly.ioutils import (print_on_console,
                            check_out_path,
                            process_file,
                            is_python_file,
-                           query_yes_no
+                           query_yes_no,
+                           look_for_update
                            )
 from docly.ioutils.apply_diff import apply_diff
 from docly.ioutils.table_printer import print_results_as_table
@@ -67,6 +68,8 @@ def _deal_with_result(args, table_rows, docstr_loc):
 
 
 def main():
+    if look_for_update():
+        print("There is an update available. Please run `pip install --upgrade docly`")
     _print_welcome()
     
     setup_cmdline_args(parser)
