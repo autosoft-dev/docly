@@ -1,6 +1,8 @@
 import pathlib
 from setuptools import find_packages, setup
 
+from docly import __version__
+
 # The directory containing this file
 HERE = pathlib.Path(__file__).parent
 
@@ -23,7 +25,7 @@ classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
 ],
-version="0.0.7",
+version=__version__,
 packages=find_packages(exclude=("tests",)),
 install_requires=["tqdm", "requests", "torch", 
                   "pyfiglet", "clint", "dpu-utils", "numpy", 
