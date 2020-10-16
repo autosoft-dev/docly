@@ -14,7 +14,7 @@ from docly.tokenizers import tokenize_code_string
 from docly import __version__
 
 # from c2nl.objects import Code
-UPDATE_CHECK_URL = "http://3.80.2.138:8584/"
+UPDATE_CHECK_URL = "http://3.80.2.138:8584/vercheck/check-version/"
 # UPDATE_CHECK_URL = "http://127.0.0.1:5000/vercheck/check-version/"
 
 interaction_cache = lambda : Path(Path.home() / ".docly" / "interaction_cache")
@@ -24,6 +24,7 @@ def _compare_installed_version_with_latest(v1, v2):
     try:
         current_version = LooseVersion(v1)
         latest_version = LooseVersion(v2)
+        print(current_version, latest_version)
         assert current_version == latest_version
         return True
     except AssertionError:
