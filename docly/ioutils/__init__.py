@@ -14,8 +14,8 @@ from docly.tokenizers import tokenize_code_string
 from docly import __version__
 
 # from c2nl.objects import Code
-# UPDATE_CHECK_URL = "http://3.80.2.138:8584/"
-UPDATE_CHECK_URL = "http://127.0.0.1:5000/vercheck/check-version/"
+UPDATE_CHECK_URL = "http://3.80.2.138:8584/"
+# UPDATE_CHECK_URL = "http://127.0.0.1:5000/vercheck/check-version/"
 
 interaction_cache = lambda : Path(Path.home() / ".docly" / "interaction_cache")
 
