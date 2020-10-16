@@ -24,7 +24,6 @@ def _compare_installed_version_with_latest(v1, v2):
     try:
         current_version = LooseVersion(v1)
         latest_version = LooseVersion(v2)
-        print(current_version, latest_version)
         assert current_version == latest_version
         return True
     except AssertionError:
