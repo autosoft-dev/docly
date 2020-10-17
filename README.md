@@ -11,6 +11,10 @@ Automatically generate docstrings for your python functions
 
 Requires python 3.6+
 
+_NOTE THAT, if you are getting an error (in a fresh virtualenv in ubuntu it is observed) like `error: invalid command 'bdist_wheel'` then please install wheel by doing `pip install wheel`_
+
+_ALSO NOTE that if you are getting an error to build tree-sitter because you do not have gcc installed then you can install it using `sudo apt-get install gcc python3-dev` for other distros please check [here](https://stackoverflow.com/questions/21530577/fatal-error-python-h-no-such-file-or-directory)_
+
 First install setuptools-rust by 
 
 ```
