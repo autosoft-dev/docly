@@ -14,6 +14,8 @@ class DoclyConfig(object):
             self.config.read(config_file)
             if "skipDirs" not in self.config:
                 raise BadConfigError("\n\n=====>\nYou have mentioned a config file but it is badly formatted")
+        else:
+            self.config = None
     
     def _parent_contains_child(self, parent_path: str, child_path: str):
         child_path_rev = list(reversed(child_path.split("/")))
@@ -22,6 +24,8 @@ class DoclyConfig(object):
         return child_path_rev == parent_path_to_compare
 
     def is_dir_skipped(self, file_path_until_last_parent: str):
+        if not self.config:
+            return False
         for p in self.config["skipDirs"].keys():
             if self._parent_contains_child(file_path_until_last_parent, p):
                 return True
