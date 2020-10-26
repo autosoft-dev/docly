@@ -3,11 +3,24 @@ from argparse import ArgumentDefaultsHelpFormatter
 from pathlib import Path
 
 
-def setup_cmdline_args(parser: ArgumentParser):
-    parser.add_argument("--no_generate_diff", action="store_false")
-    parser.add_argument("--print_report", action="store_true")
+def setup_cmdline_args_for_docly_gen(parser: ArgumentParser):
+    parser.add_argument("--no_generate_diff", action="store_false", 
+                        help="Do not generate the diff")
+    parser.add_argument("--print_report", action="store_true",
+                        help="Print the report")
+    parser.add_argument("--no_generate_args_list", action="store_false",
+                        help="Do not generate argument list in the docstring")
+    #####################
     # Unused at the moment.
     parser.add_argument("--docstring_style", type=str, default="google", 
                         help="What style of docstring you want. Defaults to Google style")
+    #####################
+    parser.add_argument("--config_file", type=str, default="docly-config.ini",
+                        help="Configuration file for docly")
     parser.add_argument("files", type=str, nargs="+",
                          help="List the files/dirs you want to run it on")
+
+
+def setup_cmdline_args_for_docly_restore(parser: ArgumentParser):
+    parser.add_argument("--force", action="store_true", 
+                        help="Disables interactive restoring")

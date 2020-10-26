@@ -19,7 +19,7 @@ def inspect_and_download_latest_model(model_root: Path, download_url: str) -> bo
     if Path(model_root/ "model" / model_file).exists() and Path(model_root/ "model" / model_file).is_file():
         return True
     
-    print_on_console("There is no model. Downloading", color="red")
+    print_on_console("There is no model. Downloading", color="green")
     download_from_url(download_url, str(Path(model_root/ "model" / model_file)))
     print("Download finished, processing the files")
     return True
@@ -39,7 +39,7 @@ def inspect_and_download_latest_tslibs(tslibs_root: Path, download_url: str) -> 
     if not (tslibs_root / "tslibs").exists():
         os.mkdir(str(tslibs_root / "tslibs"))
     
-    print_on_console("There is no tree-sitter lib. Downloading", color="red")
+    print_on_console("There is no tree-sitter lib. Downloading", color="green")
     download_from_url(download_url, str(Path(tslibs_root/ "tslibs" / file_name)))
     print("Download finished, processing the files")
     return (True, file_name)

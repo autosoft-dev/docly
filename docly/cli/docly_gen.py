@@ -4,9 +4,11 @@ import time
 
 from pyfiglet import Figlet
 import transformers
+from halo import Halo
 
-from .args import setup_cmdline_args
+from .args import setup_cmdline_args_for_docly_gen
 from .setup_env import inspect_and_download_latest_model, inspect_and_download_latest_tslibs
+from docly.config import DoclyConfig
 from docly.ioutils import (print_on_console,
                            is_dir,
                            check_out_path,
@@ -59,12 +61,58 @@ def _deal_with_result(args, table_rows, docstr_loc):
         
         if choice:
             print_on_console("Applying diff", color="green")
-            apply_diff(docstr_loc)
+            apply_diff(docstr_loc, args.no_generate_args_list)
             print_on_console("Diff applied. Good bye!", color="green")
         else:
-            print_on_console("Good bye!", color="green")
+            print_on_console("Nothing changed. Good bye!", color="green")
     else:
         print_on_console("\n\nNothing to be done. Good bye!", color="green")
+
+
+@Halo(text='Processing files', spinner='dots')
+def _process(args, model, tokenizer, ts_lib_path, config: DoclyConfig):
+    table_rows = []
+    docstr_loc = {}  # Very badly named variable. Need to change
+
+    for file in args.files:
+        f_path = Path(file)
+        if is_dir(file):
+            for f in check_out_path(f_path):
+                if not is_dir(f) and is_python_file(f):
+                    ####
+                    # Very bad implementation. Change ASAP
+                    ####
+                    if not config.is_dir_skipped(str(f).split("/")[:-1]):
+                        for code_tokens, params, start_index, function_name, ds in process_file(f, ts_lib_path):
+                            if ds == "":
+                                docstr = predict_docstring(model, tokenizer, [code_tokens])
+                                if docstr_loc.get(str(f)) is None:
+                                    docstr_loc[str(f)] = {start_index[0]: (start_index[1], 
+                                                                        docstr[0], 
+                                                                        params)}
+                                else:
+                                    docstr_loc[str(f)][start_index[0]] = (start_index[1], 
+                                                                        docstr[0],
+                                                                        params)
+                                table_rows.append([f.name, function_name, docstr[0]])
+        else:
+            if is_python_file(f_path):
+                if not config.is_dir_skipped(str(f_path.absolute()).split("/")[:-1]):
+                    for code_tokens, params, start_index, function_name, ds in process_file(f_path, ts_lib_path):
+                        if ds == "":
+                            docstr = predict_docstring(model, tokenizer, [code_tokens])
+                            if docstr_loc.get(str(f_path.absolute())) is None:
+                                docstr_loc[str(f_path.absolute())] = {start_index[0]: 
+                                                                    (start_index[1], 
+                                                                    docstr[0],
+                                                                    params)}
+                            else:
+                                docstr_loc[str(f_path.absolute())][start_index[0]] = (start_index[1], 
+                                                                                    docstr[0],
+                                                                                    params)
+                            table_rows.append([f_path.name, function_name, docstr[0]])
+    return table_rows, docstr_loc
+
 
 
 def main():
@@ -72,8 +120,10 @@ def main():
         print("There is an update available. Please run `pip install --upgrade docly`")
     _print_welcome()
     
-    setup_cmdline_args(parser)
+    setup_cmdline_args_for_docly_gen(parser)
     args = parser.parse_args()
+    config = DoclyConfig(args.config_file)
+    
     # print(args.print_report)
     
     inspect_and_download_latest_model(ROOT, MODEL_DOWNLOAD_ROOT)
@@ -84,42 +134,9 @@ def main():
 
     print_on_console("Loading Engine. Please wait", color="green")
     model, tokenizer = load_model(str(ROOT / "model"/ "pytorch_model.bin"))
-    print_on_console("Engine Loaded. Processing files", color="green")
+    print_on_console("Engine Loaded.", color="green")
     ts_lib_path = str(ROOT / "tslibs" / tslib_file)
-    table_rows = []
-    docstr_loc = {}
-
-    for file in args.files:
-        f_path = Path(file)
-        if is_dir(file):
-            for f in check_out_path(f_path):
-                if not is_dir(f) and is_python_file(f):
-                    for code_tokens, params, start_index, function_name, ds in process_file(f, ts_lib_path):
-                        if ds == "":
-                            docstr = predict_docstring(model, tokenizer, [code_tokens])
-                            if docstr_loc.get(str(f)) is None:
-                                docstr_loc[str(f)] = {start_index[0]: (start_index[1], 
-                                                                       docstr[0], 
-                                                                       params)}
-                            else:
-                                docstr_loc[str(f)][start_index[0]] = (start_index[1], 
-                                                                      docstr[0],
-                                                                      params)
-                            table_rows.append([f.name, function_name, docstr[0]])
-        else:
-            if is_python_file(f_path):
-                for code_tokens, params, start_index, function_name, ds in process_file(f_path, ts_lib_path):
-                    if ds == "":
-                        docstr = predict_docstring(model, tokenizer, [code_tokens])
-                        if docstr_loc.get(str(f_path.absolute())) is None:
-                            docstr_loc[str(f_path.absolute())] = {start_index[0]: 
-                                                                (start_index[1], 
-                                                                 docstr[0],
-                                                                 params)}
-                        else:
-                            docstr_loc[str(f_path.absolute())][start_index[0]] = (start_index[1], 
-                                                                                  docstr[0],
-                                                                                  params)
-                        table_rows.append([f_path.name, function_name, docstr[0]])
+    
+    table_rows, docstr_loc = _process(args, model, tokenizer, ts_lib_path, config)
 
     _deal_with_result(args, table_rows, docstr_loc)

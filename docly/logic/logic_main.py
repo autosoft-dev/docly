@@ -75,8 +75,10 @@ def predict_docstring(model, tokenizer, code_tokens):
                     t=t[:t.index(0)]
                 text = tokenizer.decode(t,clean_up_tokenization_spaces=False)
                 p.append(text)
-            # if p[-1] == ".":
-            #     p[-2] = p[-2].strip() + "."
-            #     p.pop()
-            # return " ".join(p)
-    return p
+    
+    px = p[0].split()
+    if px[-1] == ".":
+        px[-2] = px[-2].strip() + "."
+        px.pop()
+    
+    return [" ".join(px)]

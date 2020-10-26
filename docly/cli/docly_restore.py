@@ -1,9 +1,13 @@
+from argparse import ArgumentParser
 from pathlib import Path
 import os
 import shutil
 
+from .args import setup_cmdline_args_for_docly_restore
 from docly.ioutils.apply_diff import CACHE_DIR
 from docly.ioutils import check_out_path, is_dir, is_python_file, print_on_console, query_yes_no
+
+parser = ArgumentParser()
 
 
 def get_all_files_from_cache():
@@ -11,8 +15,14 @@ def get_all_files_from_cache():
 
 
 def main():
+    setup_cmdline_args_for_docly_restore(parser)
+    args = parser.parse_args()
     all_cached_files = get_all_files_from_cache()
-    choice = query_yes_no("It will restore all MODIFIED files to the state of last run of `docly-gen`. Are you sure?")
+    if not args.force:
+        choice = query_yes_no("It will restore all MODIFIED files to the state of last run of `docly-gen`. Are you sure?")
+    else:
+        # Forceful application of restore command
+        choice = True
     if choice:
         print_on_console("Restoring files", color="green")
         try:
