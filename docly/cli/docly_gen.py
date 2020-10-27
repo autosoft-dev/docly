@@ -46,16 +46,13 @@ def _print_welcome():
 
 
 def _deal_with_result(args, table_rows, docstr_loc):
-    if args.print_report:
+    if not args.no_generate_diff and table_rows:
         print_results_as_table(table_rows)
-    if args.no_generate_diff and docstr_loc:
-        if not args.print_report:
-            choice = query_yes_no("The diff has been generated, do you want to see the suggestions for missing Docstrings?")
-            if choice:
-                print_results_as_table(table_rows)
-                choice = query_yes_no("Do you want to apply the suggestions?")
-            else:
-                choice = query_yes_no("Do you want to apply the suggestions?")
+    elif args.no_generate_diff and docstr_loc:
+        choice = query_yes_no("The diff has been generated, do you want to see the suggestions for missing Docstrings?")
+        if choice:
+            print_results_as_table(table_rows)
+            choice = query_yes_no("Do you want to apply the suggestions?")
         else:
             choice = query_yes_no("Do you want to apply the suggestions?")
         
