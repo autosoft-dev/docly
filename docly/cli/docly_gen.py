@@ -1,6 +1,8 @@
 from pathlib import Path
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import time
+import sys
+import shutil
 
 from pyfiglet import Figlet
 import transformers
@@ -9,14 +11,14 @@ from halo import Halo
 from .args import setup_cmdline_args_for_docly_gen
 from .setup_env import inspect_and_download_latest_model, inspect_and_download_latest_tslibs
 from docly.config import DoclyConfig
-from docly.ioutils import (print_on_console,
-                           is_dir,
+from docly.ioutils import (is_dir,
                            check_out_path,
                            process_file,
                            is_python_file,
                            query_yes_no,
                            look_for_update
                            )
+from docly.ioutils.console_printer import print_on_console
 from docly.ioutils.apply_diff import apply_diff
 from docly.ioutils.table_printer import print_results_as_table
 from docly.logic.logic_main import load_model, predict_docstring
@@ -59,11 +61,11 @@ def _deal_with_result(args, table_rows, docstr_loc):
         if choice:
             print_on_console("Applying diff", color="green")
             apply_diff(docstr_loc, args.no_generate_args_list)
-            print_on_console("Diff applied. Good bye!", color="green")
+            print_on_console("Diff applied. Good bye!", color="green", emoji="thumbsup")
         else:
-            print_on_console("Nothing changed. Good bye!", color="green")
+            print_on_console("Nothing changed. Good bye!", color="green", emoji="thumbsup")
     else:
-        print_on_console("\n\nNothing to be done. Good bye!", color="green")
+        print_on_console("\n\nNothing to be done. Good bye!", color="green", emoji="thumbsup")
 
 
 @Halo(text='Processing files', spinner='dots')
@@ -114,24 +116,32 @@ def _process(args, model, tokenizer, ts_lib_path, config: DoclyConfig):
 
 def main():
     if look_for_update():
-        print("There is an update available. Please run `pip install --upgrade docly`")
+        print_on_console("There is an update available. Please run `pip install --upgrade docly`", color="green", emoji="rotating_light")
     _print_welcome()
     
     setup_cmdline_args_for_docly_gen(parser)
     args = parser.parse_args()
     config = DoclyConfig(args.config_file)
+
+    try:
+        inspect_and_download_latest_model(ROOT, MODEL_DOWNLOAD_ROOT)
+    except KeyboardInterrupt:
+        print_on_console("You stopped the download. Docly won't work", color="red", emoji="X")
+        shutil.rmtree(str(ROOT / "model"))
+        sys.exit(1)
     
-    # print(args.print_report)
-    
-    inspect_and_download_latest_model(ROOT, MODEL_DOWNLOAD_ROOT)
-    ready, tslib_file = inspect_and_download_latest_tslibs(ROOT, TSLIBS_DOWNLOAD_ROOT)
-    if not ready:
-        print_on_console("===== OS version not supported =====", color="red")
-        return
+    try:
+        ready, tslib_file = inspect_and_download_latest_tslibs(ROOT, TSLIBS_DOWNLOAD_ROOT)
+        if not ready:
+            print_on_console("===== OS version not supported =====", color="red", emoji="X")
+            return
+    except KeyboardInterrupt:
+        print_on_console("You stopped the download. Docly won't work", color="red", emoji="X")
+        sys.exit(1)
 
     print_on_console("Loading Engine. Please wait", color="green")
     model, tokenizer = load_model(str(ROOT / "model"/ "pytorch_model.bin"))
-    print_on_console("Engine Loaded.", color="green")
+    print_on_console("Engine Loaded.", color="green", emoji="heavy_check_mark")
     ts_lib_path = str(ROOT / "tslibs" / tslib_file)
     
     table_rows, docstr_loc = _process(args, model, tokenizer, ts_lib_path, config)

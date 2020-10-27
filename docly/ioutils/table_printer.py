@@ -1,13 +1,16 @@
-from prettytable import PrettyTable
+from rich.table import Table
+from rich.console import Console
 
 
 def print_results_as_table(rows):
-    table = PrettyTable()
-    table.field_names = ["File Name", "Function Name", "Docstring"]
-    table.align["File Name"] = "l"
-    table.align["Function Name"] = "l"
-    table.align["Docstring"] = "l"
+    table = Table(title="Functions and Docstrings")
+
+    table.add_column("File Name", justify="left")
+    table.add_column("Function Name", justify="left")
+    table.add_column("Docstring", justify="left")
+
     for row in rows:
-        table.add_row(row)
+        table.add_row(*row)
     
-    print(table)
+    console = Console()
+    console.print(table)

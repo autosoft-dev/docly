@@ -28,8 +28,8 @@ classifiers=[
 version=__version__,
 packages=find_packages(exclude=("tests",)),
 install_requires=["tqdm", "requests", "torch", 
-                  "pyfiglet", "clint", "dpu-utils", "numpy", 
-                  "PrettyTable", "nltk", "transformers==2.5.0", "tree_hugger",
+                  "pyfiglet", "rich", "dpu-utils", "numpy", 
+                  "nltk", "transformers==2.5.0", "tree_hugger",
                   "halo",
                   ],
 entry_points = {

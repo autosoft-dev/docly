@@ -7,7 +7,6 @@ from distutils.version import LooseVersion
 import time
 
 from tqdm import tqdm
-from clint.textui import puts, colored
 
 from docly.parser import parser as py_parser
 from docly.tokenizers import tokenize_code_string
@@ -68,17 +67,6 @@ def is_python_file(file_path):
         return Path(file_path).suffix == ".py"
     else:
         return False
-
-
-def print_on_console(text, color="blue"):
-    if color == "blue":
-        puts(colored.blue(text))
-    elif color == "red":
-        puts(colored.red(text))
-    elif color == "green":
-        puts(colored.green(text))
-    else:
-        puts(text)
 
 
 def download_from_url(url, dst):

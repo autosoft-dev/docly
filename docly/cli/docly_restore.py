@@ -5,7 +5,8 @@ import shutil
 
 from .args import setup_cmdline_args_for_docly_restore
 from docly.ioutils.apply_diff import CACHE_DIR
-from docly.ioutils import check_out_path, is_dir, is_python_file, print_on_console, query_yes_no
+from docly.ioutils import check_out_path, is_dir, is_python_file, query_yes_no
+from docly.ioutils.console_printer import print_on_console
 
 parser = ArgumentParser()
 
@@ -34,6 +35,6 @@ def main():
                         source_file = str(CACHE_DIR / comparison_key)
                         final_file = str(Path(file).absolute())
                         shutil.move(source_file, final_file)
-            print_on_console("Restoring done", color="green")
+            print_on_console("Restoring done", color="green", emoji="thumbsup")
         except KeyboardInterrupt:
-            print_on_console("Restoration not finished", color="red")
+            print_on_console("Restoration not finished", color="red", emoji="X")

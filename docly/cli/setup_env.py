@@ -2,7 +2,8 @@ import os
 from pathlib import Path
 import platform
 
-from docly.ioutils import download_from_url, print_on_console
+from docly.ioutils import download_from_url
+from docly.ioutils.console_printer import print_on_console
 
 SUPPORTED_PLATFORMS = ["linux", "darwin"]
 
@@ -21,7 +22,7 @@ def inspect_and_download_latest_model(model_root: Path, download_url: str) -> bo
     
     print_on_console("There is no model. Downloading", color="green")
     download_from_url(download_url, str(Path(model_root/ "model" / model_file)))
-    print("Download finished, processing the files")
+    print_on_console("Download complete", color="green", emoji="heavy_check_mark")
     return True
 
 
@@ -41,6 +42,6 @@ def inspect_and_download_latest_tslibs(tslibs_root: Path, download_url: str) -> 
     
     print_on_console("There is no tree-sitter lib. Downloading", color="green")
     download_from_url(download_url, str(Path(tslibs_root/ "tslibs" / file_name)))
-    print("Download finished, processing the files")
+    print_on_console("Download complete", color="green", emoji="heavy_check_mark")
     return (True, file_name)
     
