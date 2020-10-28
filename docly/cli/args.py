@@ -8,6 +8,8 @@ def setup_cmdline_args_for_docly_gen(parser: ArgumentParser):
                         help="Do not generate the diff. Only prints a report on the console")
     parser.add_argument("--no_generate_args_list", action="store_false",
                         help="Do not generate argument list in the docstring")
+    parser.add_argument("--no_print_report", action="store_false",
+                        help="Do not prompt to show the report once the diff is generated")
     #####################
     # Unused at the moment.
     parser.add_argument("--docstring_style", type=str, default="google", 

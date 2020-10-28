@@ -47,21 +47,28 @@ def _print_welcome():
 #     print(docstrs)
 
 
+def _apply_diff(docstr_loc, no_generate_args_list):
+    print_on_console("Applying diff", color="green")
+    apply_diff(docstr_loc, no_generate_args_list)
+    print_on_console("Diff applied. Good bye!", color="green", emoji="thumbsup")
+
+
 def _deal_with_result(args, table_rows, docstr_loc):
     if not args.no_generate_diff and table_rows:
         print_results_as_table(table_rows)
     elif args.no_generate_diff and docstr_loc:
-        choice = query_yes_no("The diff has been generated, do you want to see the suggestions for missing Docstrings?")
-        if choice:
-            print_results_as_table(table_rows)
-            choice = query_yes_no("Do you want to apply the suggestions?")
+        if args.no_print_report:
+            choice = query_yes_no("The diff has been generated, do you want to see the suggestions for missing Docstrings?")
+            if choice:
+                print_results_as_table(table_rows)
+                choice = query_yes_no("Do you want to apply the suggestions?")
+            else:
+                choice = query_yes_no("Do you want to apply the suggestions?")
         else:
             choice = query_yes_no("Do you want to apply the suggestions?")
         
         if choice:
-            print_on_console("Applying diff", color="green")
-            apply_diff(docstr_loc, args.no_generate_args_list)
-            print_on_console("Diff applied. Good bye!", color="green", emoji="thumbsup")
+            _apply_diff(docstr_loc, args.no_generate_args_list)
         else:
             print_on_console("Nothing changed. Good bye!", color="green", emoji="thumbsup")
     else:
