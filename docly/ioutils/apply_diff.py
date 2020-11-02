@@ -13,6 +13,8 @@ from pathlib import Path
 from typing import Dict
 # from tabnanny import check
 
+from docly.ioutils.convert_ipynb import convert_python_to_ipynb
+
 CACHE_DIR = (Path().home() / ".docly" / "file_cache")
 
 cache_exists = lambda : CACHE_DIR.exists()
@@ -46,7 +48,7 @@ def _get_line_to_write(docstrs, line_num, should_write_args_list: bool):
     return line_to_write
 
 
-def apply_diff(docstr_loc: Dict[str, Dict[int, tuple]], should_write_args_list: bool):
+def apply_diff(docstr_loc: Dict[str, Dict[int, tuple]], should_write_args_list: bool, ipynb_files: Dict):
     try:
         for file_loc, docstrs in docstr_loc.items():
             # l = check(file_loc)
@@ -64,17 +66,37 @@ def apply_diff(docstr_loc: Dict[str, Dict[int, tuple]], should_write_args_list: 
                         write_handle.write(line)
                     else:
                         write_handle.write(line)
-            cache_file_name = file_loc[1:].replace("/", "#")
             
-            if not cache_exists():
-                make_cache_dir()
-            
-            if (CACHE_DIR / cache_file_name).exists():
-                (CACHE_DIR / cache_file_name).unlink()
-            
-            shutil.move(file_loc, str(CACHE_DIR / cache_file_name))
-            shutil.move(str(temp_file), str(final_file))
+            if len(ipynb_files) > 0 and file_loc not in ipynb_files.keys():
+                cache_file_name = file_loc[1:].replace("/", "#")
+                
+                if not cache_exists():
+                    make_cache_dir()
+                
+                if (CACHE_DIR / cache_file_name).exists():
+                    (CACHE_DIR / cache_file_name).unlink()
+                
+                shutil.move(file_loc, str(CACHE_DIR / cache_file_name))
+                shutil.move(str(temp_file), str(final_file))
 
-            write_handle.close()
+                write_handle.close()
+            else:
+                actual_file_path = str(ipynb_files[file_loc])
+                cache_file_name = actual_file_path[1:].replace("/", "#")
+
+                if not cache_exists():
+                    make_cache_dir()
+                
+                if (CACHE_DIR / cache_file_name).exists():
+                    (CACHE_DIR / cache_file_name).unlink()
+                
+                shutil.move(actual_file_path, str(CACHE_DIR / cache_file_name))
+
+                Path(file_loc).unlink()
+                
+                shutil.move(str(temp_file), str(final_file))
+                convert_python_to_ipynb(Path(final_file))
+
+                Path(final_file).unlink()
     except KeyboardInterrupt:
         temp_file.unlink()

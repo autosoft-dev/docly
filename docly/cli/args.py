@@ -10,6 +10,8 @@ def setup_cmdline_args_for_docly_gen(parser: ArgumentParser):
                         help="Do not generate argument list in the docstring")
     parser.add_argument("--no_print_report", action="store_false",
                         help="Do not prompt to show the report once the diff is generated")
+    parser.add_argument("--run_on_notebooks", action="store_true",
+                        help="!!EXPERIMENTAL!! If you want to run docly to run on notebook (.ipynb) files (Requires jupytext and defaults false)")
     #####################
     # Unused at the moment.
     parser.add_argument("--docstring_style", type=str, default="google", 

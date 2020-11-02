@@ -69,6 +69,15 @@ def is_python_file(file_path):
         return False
 
 
+def is_ipynb_notebook(file_path):
+    if isinstance(file_path, Path):
+        return file_path.suffix == ".ipynb"
+    elif isinstance(file_path, str):
+        return Path(file_path).suffix == ".ipynb"
+    else:
+        return False
+
+
 def download_from_url(url, dst):
     """
     @param: url to download file

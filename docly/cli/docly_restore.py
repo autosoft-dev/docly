@@ -5,7 +5,7 @@ import shutil
 
 from .args import setup_cmdline_args_for_docly_restore
 from docly.ioutils.apply_diff import CACHE_DIR
-from docly.ioutils import check_out_path, is_dir, is_python_file, query_yes_no
+from docly.ioutils import check_out_path, is_dir, is_python_file, query_yes_no, is_ipynb_notebook
 from docly.ioutils.console_printer import print_on_console
 
 parser = ArgumentParser()
@@ -28,7 +28,7 @@ def main():
         print_on_console("Restoring files", color="green")
         try:
             for file in check_out_path(Path().cwd().absolute()):
-                if not is_dir(file) and is_python_file(file):
+                if not is_dir(file) and (is_python_file(file) or is_ipynb_notebook(file)):
                     full_path = str(Path(file).absolute())
                     comparison_key = full_path[1:].replace("/", "#")
                     if comparison_key in all_cached_files:

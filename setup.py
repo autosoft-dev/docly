@@ -30,8 +30,11 @@ packages=find_packages(exclude=("tests",)),
 install_requires=["tqdm", "requests", "torch", 
                   "pyfiglet", "rich", "dpu-utils", "numpy", 
                   "nltk", "transformers==2.5.0", "tree_hugger",
-                  "halo",
+                  "halo", "invoke",
                   ],
+extras_require={
+        "jupyter": ["jupytext"]
+},
 entry_points = {
     'console_scripts': ['docly-gen=docly.cli.docly_gen:main',
                         'docly-restore=docly.cli.docly_restore:main'],
