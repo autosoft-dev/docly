@@ -55,6 +55,11 @@ def _apply_diff(docstr_loc, no_generate_args_list, ipynb_files):
     print_on_console("Diff applied. Good bye!", color="green", emoji="thumbsup")
 
 
+def _remove_converted_python_files(ipynb_files):
+    for py_file_loc, _ in ipynb_files.items():
+        Path(py_file_loc).unlink()
+
+
 def _deal_with_result(args, table_rows, docstr_loc, ipynb_files):
     if not args.no_generate_diff and table_rows:
         print_results_as_table(table_rows)
@@ -72,6 +77,7 @@ def _deal_with_result(args, table_rows, docstr_loc, ipynb_files):
         if choice:
             _apply_diff(docstr_loc, args.no_generate_args_list, ipynb_files)
         else:
+            _remove_converted_python_files(ipynb_files)
             print_on_console("Nothing changed. Good bye!", color="green", emoji="thumbsup")
     else:
         print_on_console("\n\nNothing to be done. Good bye!", color="green", emoji="thumbsup")
