@@ -60,6 +60,14 @@ def _remove_converted_python_files(ipynb_files):
         Path(py_file_loc).unlink()
 
 
+def _if_jupytext_is_installed():
+    try:
+        import jupytext
+        return True
+    except ModuleNotFoundError:
+        return False
+
+
 def _deal_with_result(args, table_rows, docstr_loc, ipynb_files):
     if not args.no_generate_diff and table_rows:
         print_results_as_table(table_rows)
@@ -183,6 +191,10 @@ def main():
     
     setup_cmdline_args_for_docly_gen(parser)
     args = parser.parse_args()
+
+    if args.run_on_notebooks and not _if_jupytext_is_installed():
+        print_on_console("You have mentioned `run_on_notebooks` but the needed dependecy is not present. Please run `pip install 'docly[jupyter]'` for that. This switch will be ignored", color="green")
+        args.run_on_notebooks = False
     
     if args.run_on_notebooks:
         print_on_console("You have mentioned the `run_on_notebooks` switch. It is experimental", color="red", emoji="rotating_light")
