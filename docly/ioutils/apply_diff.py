@@ -67,7 +67,20 @@ def apply_diff(docstr_loc: Dict[str, Dict[int, tuple]], should_write_args_list: 
                     else:
                         write_handle.write(line)
             
-            if len(ipynb_files) > 0 and file_loc not in ipynb_files.keys():
+            if len(ipynb_files) == 0:
+                cache_file_name = file_loc[1:].replace("/", "#")
+                
+                if not cache_exists():
+                    make_cache_dir()
+                
+                if (CACHE_DIR / cache_file_name).exists():
+                    (CACHE_DIR / cache_file_name).unlink()
+                
+                shutil.move(file_loc, str(CACHE_DIR / cache_file_name))
+                shutil.move(str(temp_file), str(final_file))
+
+                write_handle.close()
+            elif len(ipynb_files) > 0 and file_loc not in ipynb_files.keys():
                 cache_file_name = file_loc[1:].replace("/", "#")
                 
                 if not cache_exists():
