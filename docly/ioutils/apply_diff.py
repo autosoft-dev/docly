@@ -67,6 +67,7 @@ def apply_diff(docstr_loc: Dict[str, Dict[int, tuple]], should_write_args_list: 
                     else:
                         write_handle.write(line)
             
+            write_handle.close()
             if len(ipynb_files) == 0:
                 cache_file_name = file_loc[1:].replace("/", "#")
                 
@@ -78,8 +79,6 @@ def apply_diff(docstr_loc: Dict[str, Dict[int, tuple]], should_write_args_list: 
                 
                 shutil.move(file_loc, str(CACHE_DIR / cache_file_name))
                 shutil.move(str(temp_file), str(final_file))
-
-                write_handle.close()
             elif len(ipynb_files) > 0 and file_loc not in ipynb_files.keys():
                 cache_file_name = file_loc[1:].replace("/", "#")
                 
@@ -91,8 +90,6 @@ def apply_diff(docstr_loc: Dict[str, Dict[int, tuple]], should_write_args_list: 
                 
                 shutil.move(file_loc, str(CACHE_DIR / cache_file_name))
                 shutil.move(str(temp_file), str(final_file))
-
-                write_handle.close()
             else:
                 actual_file_path = str(ipynb_files[file_loc])
                 cache_file_name = actual_file_path[1:].replace("/", "#")
