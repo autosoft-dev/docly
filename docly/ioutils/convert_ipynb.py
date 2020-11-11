@@ -11,7 +11,7 @@ PY_TO_IPYNB_CMD = "jupytext --update --to ipynb"
 
 
 def convert_ipynb_to_python(notebook_path: Path):
-    actual_file_path = str(notebook_path)
+    actual_file_path = str(notebook_path.absolute())
     cache_file_name = actual_file_path[1:].replace("/", "#")
 
     if not cache_exists():
