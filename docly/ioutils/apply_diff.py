@@ -100,9 +100,10 @@ def apply_diff(docstr_loc: Dict[str, Dict[int, tuple]], should_write_args_list: 
                 if (CACHE_DIR / cache_file_name).exists():
                     (CACHE_DIR / cache_file_name).unlink()
                 
-                shutil.move(actual_file_path, str(CACHE_DIR / cache_file_name))
+                shutil.copy(actual_file_path, str(CACHE_DIR / cache_file_name))
 
-                Path(file_loc).unlink()
+                if Path(final_file).exists():
+                    Path(final_file).unlink()
                 
                 shutil.move(str(temp_file), str(final_file))
                 convert_python_to_ipynb(Path(final_file))

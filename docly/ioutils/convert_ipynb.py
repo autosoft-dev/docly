@@ -4,8 +4,8 @@ import logging
 from invoke import run
 
 
-IPYNB_TO_PY_CMD = "jupytext --to py"
-PY_TO_IPYNB_CMD = "jupytext --to notebook"
+IPYNB_TO_PY_CMD = "jupytext --set-formats ipynb,py:percent"
+PY_TO_IPYNB_CMD = "jupytext --update --to ipynb"
 
 
 def convert_ipynb_to_python(notebook_path: Path):
