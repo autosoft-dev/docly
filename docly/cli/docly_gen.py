@@ -196,11 +196,11 @@ def main():
         print_on_console("You have mentioned `run_on_notebooks` but the needed dependecy is not present. Please run `pip install 'docly[jupyter]'` for that. This switch will be ignored", color="green")
         args.run_on_notebooks = False
     
-    if args.run_on_notebooks:
-        print_on_console("You have mentioned the `run_on_notebooks` switch. It is experimental", color="red", emoji="rotating_light")
-        choice = query_yes_no("Do you want to continue?")
-        if not choice:
-            args.run_on_notebooks = False
+    # if args.run_on_notebooks:
+    #     print_on_console("You have mentioned the `run_on_notebooks` switch. It is experimental", color="red", emoji="rotating_light")
+    #     choice = query_yes_no("Do you want to continue?")
+    #     if not choice:
+    #         args.run_on_notebooks = False
 
     config = DoclyConfig(args.config_file)
 
