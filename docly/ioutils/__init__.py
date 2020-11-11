@@ -18,6 +18,11 @@ UPDATE_CHECK_URL = "http://3.80.2.138:8584/vercheck/check-version/"
 
 interaction_cache = lambda : Path(Path.home() / ".docly" / "interaction_cache")
 
+CACHE_DIR = (Path().home() / ".docly" / "file_cache")
+
+cache_exists = lambda : CACHE_DIR.exists()
+make_cache_dir = lambda : os.mkdir(str(CACHE_DIR))
+
 
 def _compare_installed_version_with_latest(v1, v2):
     try:

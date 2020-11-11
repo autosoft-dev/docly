@@ -13,12 +13,8 @@ from pathlib import Path
 from typing import Dict
 # from tabnanny import check
 
+from docly.ioutils import CACHE_DIR, cache_exists, make_cache_dir
 from docly.ioutils.convert_ipynb import convert_python_to_ipynb
-
-CACHE_DIR = (Path().home() / ".docly" / "file_cache")
-
-cache_exists = lambda : CACHE_DIR.exists()
-make_cache_dir = lambda : os.mkdir(str(CACHE_DIR))
 
 
 def _get_line_to_write(docstrs, line_num, should_write_args_list: bool):
@@ -91,17 +87,6 @@ def apply_diff(docstr_loc: Dict[str, Dict[int, tuple]], should_write_args_list: 
                 shutil.move(file_loc, str(CACHE_DIR / cache_file_name))
                 shutil.move(str(temp_file), str(final_file))
             else:
-                actual_file_path = str(ipynb_files[file_loc])
-                cache_file_name = actual_file_path[1:].replace("/", "#")
-
-                if not cache_exists():
-                    make_cache_dir()
-                
-                if (CACHE_DIR / cache_file_name).exists():
-                    (CACHE_DIR / cache_file_name).unlink()
-                
-                shutil.copy(actual_file_path, str(CACHE_DIR / cache_file_name))
-
                 if Path(final_file).exists():
                     Path(final_file).unlink()
                 
