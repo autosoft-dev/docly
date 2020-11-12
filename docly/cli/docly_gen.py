@@ -49,9 +49,9 @@ def _print_welcome():
 #     print(docstrs)
 
 
-def _apply_diff(docstr_loc, no_generate_args_list, ipynb_files):
+def _apply_diff(docstr_loc, no_generate_args_list, ipynb_files, docstring_style):
     print_on_console("Applying diff", color="green")
-    apply_diff(docstr_loc, no_generate_args_list, ipynb_files)
+    apply_diff(docstr_loc, no_generate_args_list, ipynb_files, docstring_style)
     print_on_console("Diff applied. Good bye!", color="green", emoji="thumbsup")
 
 
@@ -83,7 +83,7 @@ def _deal_with_result(args, table_rows, docstr_loc, ipynb_files):
             choice = query_yes_no("Do you want to apply the suggestions?")
         
         if choice:
-            _apply_diff(docstr_loc, args.no_generate_args_list, ipynb_files)
+            _apply_diff(docstr_loc, args.no_generate_args_list, ipynb_files, args.docstring_style)
         else:
             _remove_converted_python_files(ipynb_files)
             print_on_console("Nothing changed. Good bye!", color="green", emoji="thumbsup")

@@ -15,7 +15,7 @@ def setup_cmdline_args_for_docly_gen(parser: ArgumentParser):
     #####################
     # Unused at the moment.
     parser.add_argument("--docstring_style", type=str, default="google", 
-                        help="What style of docstring you want. Defaults to Google style")
+                        help="What style of docstring you want [google or numpy]. Defaults to `google` style.")
     #####################
     parser.add_argument("--config_file", type=str, default="docly-config.ini",
                         help="Configuration file for docly")
