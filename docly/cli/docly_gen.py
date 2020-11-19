@@ -127,22 +127,23 @@ def _process(args, model, tokenizer, ts_lib_path, config: DoclyConfig):
                 elif not is_dir(f) and is_ipynb_notebook(f) and args.run_on_notebooks:
                     if not config.is_dir_skipped(str(f).split("/")[:-1]):
                         py_file = convert_ipynb_to_python(f)
-                        for code_tokens, params, start_index, function_name, ds in process_file(py_file, ts_lib_path):
-                            if ds == "":
-                                docstr = predict_docstring(model, tokenizer, [code_tokens])
-                                if docstr_loc.get(str(py_file)) is None:
-                                        docstr_loc[str(py_file)] = {start_index[0]: 
-                                                                        (start_index[1], 
-                                                                        docstr[0], 
-                                                                        params
-                                                                        )
-                                                                    }
-                                else:
-                                    docstr_loc[str(py_file)][start_index[0]] = (start_index[1], 
-                                                                                docstr[0],
-                                                                                params)
-                                table_rows.append([f.name, function_name, docstr[0]])
-                                ipynb_files[str(py_file.absolute())] = f
+                        if py_file:
+                            for code_tokens, params, start_index, function_name, ds in process_file(py_file, ts_lib_path):
+                                if ds == "":
+                                    docstr = predict_docstring(model, tokenizer, [code_tokens])
+                                    if docstr_loc.get(str(py_file)) is None:
+                                            docstr_loc[str(py_file)] = {start_index[0]: 
+                                                                            (start_index[1], 
+                                                                            docstr[0], 
+                                                                            params
+                                                                            )
+                                                                        }
+                                    else:
+                                        docstr_loc[str(py_file)][start_index[0]] = (start_index[1], 
+                                                                                    docstr[0],
+                                                                                    params)
+                                    table_rows.append([f.name, function_name, docstr[0]])
+                                    ipynb_files[str(py_file.absolute())] = f
         else:
             if is_python_file(f_path):
                 if not config.is_dir_skipped(str(f_path.absolute()).split("/")[:-1]):
@@ -164,22 +165,23 @@ def _process(args, model, tokenizer, ts_lib_path, config: DoclyConfig):
             elif is_ipynb_notebook(f_path) and args.run_on_notebooks:
                 if not config.is_dir_skipped(str(f_path.absolute()).split("/")[:-1]):
                     py_file = convert_ipynb_to_python(f_path)
-                    for code_tokens, params, start_index, function_name, ds in process_file(py_file, ts_lib_path):
-                        if ds == "":
-                            docstr = predict_docstring(model, tokenizer, [code_tokens])
-                            if docstr_loc.get(str(py_file)) is None:
-                                    docstr_loc[str(py_file)] = {start_index[0]: 
-                                                                    (start_index[1], 
-                                                                    docstr[0],
-                                                                    params
-                                                                    )
-                                                                }
-                            else:
-                                docstr_loc[str(py_file)][start_index[0]] = (start_index[1], 
-                                                                            docstr[0],
-                                                                            params)
-                            table_rows.append([f_path.name, function_name, docstr[0]])
-                            ipynb_files[str(py_file.absolute())] = f_path.absolute()
+                    if py_file:
+                        for code_tokens, params, start_index, function_name, ds in process_file(py_file, ts_lib_path):
+                            if ds == "":
+                                docstr = predict_docstring(model, tokenizer, [code_tokens])
+                                if docstr_loc.get(str(py_file)) is None:
+                                        docstr_loc[str(py_file)] = {start_index[0]: 
+                                                                        (start_index[1], 
+                                                                        docstr[0],
+                                                                        params
+                                                                        )
+                                                                    }
+                                else:
+                                    docstr_loc[str(py_file)][start_index[0]] = (start_index[1], 
+                                                                                docstr[0],
+                                                                                params)
+                                table_rows.append([f_path.name, function_name, docstr[0]])
+                                ipynb_files[str(py_file.absolute())] = f_path.absolute()
     return table_rows, docstr_loc, ipynb_files
 
 
