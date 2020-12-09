@@ -30,6 +30,7 @@ transformers.logger.setLevel(transformers.logging.CRITICAL)
 parser = ArgumentParser()
 ROOT = (Path.home() / ".docly")
 MODEL_DOWNLOAD_ROOT = "https://docly-model.s3.amazonaws.com/pytorch_model.bin"
+NEW_MODEL_DOWNLOAD_ROOT = "https://code-summary.s3.amazonaws.com/pytorch_model_new.bin"
 TSLIBS_DOWNLOAD_ROOT = "https://func2docstr-py.s3.amazonaws.com/"
 
 f = Figlet(font='slant')
@@ -109,9 +110,9 @@ def _process(args, model, tokenizer, ts_lib_path, config: DoclyConfig):
                     # Very bad implementation. Change ASAP
                     ####
                     if not config.is_dir_skipped(str(f).split("/")[:-1]):
-                        for code_tokens, params, start_index, function_name, ds in process_file(f, ts_lib_path):
+                        for code_tokens, params, start_index, function_name, ds in process_file(f, ts_lib_path, args.use_old_model):
                             if ds == "":
-                                docstr = predict_docstring(model, tokenizer, [code_tokens])
+                                docstr = predict_docstring(model, tokenizer, code_tokens, args.use_old_model)
                                 if docstr_loc.get(str(f)) is None:
                                     docstr_loc[str(f)] = {start_index[0]: 
                                                                 (start_index[1], 
@@ -128,9 +129,9 @@ def _process(args, model, tokenizer, ts_lib_path, config: DoclyConfig):
                     if not config.is_dir_skipped(str(f).split("/")[:-1]):
                         py_file = convert_ipynb_to_python(f)
                         if py_file:
-                            for code_tokens, params, start_index, function_name, ds in process_file(py_file, ts_lib_path):
+                            for code_tokens, params, start_index, function_name, ds in process_file(py_file, ts_lib_path, args.use_old_model):
                                 if ds == "":
-                                    docstr = predict_docstring(model, tokenizer, [code_tokens])
+                                    docstr = predict_docstring(model, tokenizer, code_tokens, args.use_old_model)
                                     if docstr_loc.get(str(py_file)) is None:
                                             docstr_loc[str(py_file)] = {start_index[0]: 
                                                                             (start_index[1], 
@@ -147,9 +148,9 @@ def _process(args, model, tokenizer, ts_lib_path, config: DoclyConfig):
         else:
             if is_python_file(f_path):
                 if not config.is_dir_skipped(str(f_path.absolute()).split("/")[:-1]):
-                    for code_tokens, params, start_index, function_name, ds in process_file(f_path, ts_lib_path):
+                    for code_tokens, params, start_index, function_name, ds in process_file(f_path, ts_lib_path, args.use_old_model):
                         if ds == "":
-                            docstr = predict_docstring(model, tokenizer, [code_tokens])
+                            docstr = predict_docstring(model, tokenizer, code_tokens, args.use_old_model)
                             if docstr_loc.get(str(f_path.absolute())) is None:
                                 docstr_loc[str(f_path.absolute())] = {start_index[0]: 
                                                                         (start_index[1], 
@@ -159,16 +160,16 @@ def _process(args, model, tokenizer, ts_lib_path, config: DoclyConfig):
                                                                      }
                             else:
                                 docstr_loc[str(f_path.absolute())][start_index[0]] = (start_index[1], 
-                                                                                    docstr[0],
-                                                                                    params)
+                                                                                      docstr[0],
+                                                                                      params)
                             table_rows.append([f_path.name, function_name, docstr[0]])
             elif is_ipynb_notebook(f_path) and args.run_on_notebooks:
                 if not config.is_dir_skipped(str(f_path.absolute()).split("/")[:-1]):
                     py_file = convert_ipynb_to_python(f_path)
                     if py_file:
-                        for code_tokens, params, start_index, function_name, ds in process_file(py_file, ts_lib_path):
+                        for code_tokens, params, start_index, function_name, ds in process_file(py_file, ts_lib_path, args.use_old_model):
                             if ds == "":
-                                docstr = predict_docstring(model, tokenizer, [code_tokens])
+                                docstr = predict_docstring(model, tokenizer, code_tokens, args.use_old_model)
                                 if docstr_loc.get(str(py_file)) is None:
                                         docstr_loc[str(py_file)] = {start_index[0]: 
                                                                         (start_index[1], 
@@ -207,7 +208,8 @@ def main():
     config = DoclyConfig(args.config_file)
 
     try:
-        inspect_and_download_latest_model(ROOT, MODEL_DOWNLOAD_ROOT)
+        mdp = NEW_MODEL_DOWNLOAD_ROOT if not args.use_old_model else MODEL_DOWNLOAD_ROOT
+        inspect_and_download_latest_model(ROOT, mdp, args.use_old_model)
     except KeyboardInterrupt:
         print_on_console("You stopped the download. Docly won't work", color="red", emoji="X")
         shutil.rmtree(str(ROOT / "model"))
@@ -223,8 +225,10 @@ def main():
         sys.exit(1)
 
     print_on_console("Loading Engine. Please wait", color="green")
-    model, tokenizer = load_model(str(ROOT / "model"/ "pytorch_model.bin"))
+    model_name = "pytorch_model_new.bin" if not args.use_old_model else "pytorch_model.bin"
+    model, tokenizer = load_model(str(ROOT / "model"/ model_name), args.use_old_model)
     print_on_console("Engine Loaded.", color="green", emoji="heavy_check_mark")
+    
     ts_lib_path = str(ROOT / "tslibs" / tslib_file)
     
     table_rows, docstr_loc, ipynb_files = _process(args, model, tokenizer, ts_lib_path, config)

@@ -37,6 +37,7 @@ extras_require={
 },
 entry_points = {
     'console_scripts': ['docly-gen=docly.cli.docly_gen:main',
-                        'docly-restore=docly.cli.docly_restore:main'],
+                        'docly-restore=docly.cli.docly_restore:main',
+                        'docly-clean=docly.cli.docly_clean:main'],
 },
 )

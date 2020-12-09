@@ -121,7 +121,7 @@ def check_out_path(target_path: Path):
             yield file.absolute()
     
 
-def process_file(file_path: Path, ts_lib_path: str):
+def process_file(file_path: Path, ts_lib_path: str, use_old=False):
     result, parser_obj = py_parser.parse(file_path, ts_lib_path)
     func_and_params = parser_obj.get_all_function_names_with_params()
     if result:
@@ -132,8 +132,10 @@ def process_file(file_path: Path, ts_lib_path: str):
             (func_body, docstr), start, end = data
             ret_start = (start[0]+1, start[1])
             params = func_and_params[func_name]
-        
-            yield tokenize_code_string(func_body), params, ret_start, func_name, docstr.strip()
+
+            code_str = [tokenize_code_string(func_body)] if use_old else func_body
+
+            yield code_str, params, ret_start, func_name, docstr.strip()
 
 
 def query_yes_no(question, default="yes"):

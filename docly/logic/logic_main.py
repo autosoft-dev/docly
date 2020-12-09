@@ -6,10 +6,9 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from .model import Seq2Seq
-from .example import make_example
+from .example import make_example, make_new_example
 from .input_features import convert_examples_to_features
-from torch.utils.data import DataLoader, Dataset, SequentialSampler,TensorDataset
+from torch.utils.data import DataLoader, Dataset, SequentialSampler, TensorDataset
 
 from transformers import (WEIGHTS_NAME, AdamW, get_linear_schedule_with_warmup,
                           RobertaConfig, RobertaModel, RobertaTokenizer)
@@ -24,10 +23,19 @@ max_source_length = 256
 seed = 42
 
 
-def load_model(model_path):
+def load_model(model_path, is_old=False):
+    if is_old:
+        from .model import Seq2Seq
+    else:
+        from .model_new import Seq2Seq
+    
     config_class, model_class, tokenizer_class = MODEL_CLASSES['roberta']
+    
     config = config_class.from_pretrained(model_name_or_path)
-    tokenizer = tokenizer_class.from_pretrained(model_name_or_path)
+    if is_old:
+        tokenizer = tokenizer_class.from_pretrained(model_name_or_path)
+    else:
+        tokenizer = tokenizer_class.from_pretrained(model_name_or_path, do_lower_case=False)
 
     encoder = model_class.from_pretrained(model_name_or_path, config=config)  
     decoder_layer = nn.TransformerDecoderLayer(d_model=config.hidden_size, 
@@ -41,24 +49,33 @@ def load_model(model_path):
                     sos_id=tokenizer.cls_token_id,
                     eos_id=tokenizer.sep_token_id
                    )
-    
-    model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
+    if is_old:
+        model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
+    else:
+        model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')), strict=False)
     model.to("cpu")
     model.eval()
 
     return model, tokenizer
 
 
-def predict_docstring(model, tokenizer, code_tokens):
-    examples = make_example(code_tokens)
-    features = convert_examples_to_features(examples, tokenizer)
-    all_source_ids = torch.tensor([f.source_ids for f in features], dtype=torch.long)
-    all_source_mask = torch.tensor([f.source_mask for f in features], dtype=torch.long)
+def predict_docstring(model, tokenizer, code_tokens, is_old):
+    examples = make_example(code_tokens) if is_old else make_new_example(code_tokens)
 
-    eval_data = TensorDataset(all_source_ids,all_source_mask)
+    features = convert_examples_to_features(examples, tokenizer)
+    if is_old:
+        all_source_ids = torch.tensor([f.source_ids for f in features], dtype=torch.long)
+        all_source_mask = torch.tensor([f.source_mask for f in features], dtype=torch.long)
+    else:
+        all_source_ids = torch.tensor([f.source_ids[: max_source_length] for f in features], dtype=torch.long)
+        all_source_mask = torch.tensor([f.source_mask[: max_source_length] for f in features], dtype=torch.long)
+
+    eval_data = TensorDataset(all_source_ids, all_source_mask)
 
     eval_sampler = SequentialSampler(eval_data)
-    eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=len(code_tokens))
+    batch_size = len(code_tokens) if is_old else len(eval_data)
+
+    eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=batch_size)
 
     p=[]
     for batch in eval_dataloader:

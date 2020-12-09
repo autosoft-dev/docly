@@ -33,9 +33,7 @@ except ImportError:
 class NoAppException(click.UsageError):
     """Raised if an application cannot be found or loaded."""
 
-"""Given a module instance this tries to find the best possible
-    application in the module or raises an exception.
-"""
+
 def find_best_app(script_info, module):
     from . import Flask
 
@@ -84,10 +82,7 @@ def find_best_app(script_info, module):
         " to specify one."
     )
 
-"""Takes an app factory, a ``script_info` object and  optionally a tuple
-    of arguments. Checks for the existence of a script_info argument and calls
-    the app_factory depending on that and the arguments provided.
-"""
+
 def call_factory(script_info, app_factory, args=None, kwargs=None):
     sig = inspect.signature(app_factory)
     args = [] if args is None else args
@@ -115,13 +110,7 @@ def call_factory(script_info, app_factory, args=None, kwargs=None):
 
     return app_factory(*args, **kwargs)
 
-"""Check whether calling a function raised a ``TypeError`` because
-    the call failed or because something in the factory raised the
-    error.
 
-    :param f: The function that was called.
-    :return: ``True`` if the call failed.
-"""
 def _called_with_wrong_args(f):
     
     tb = sys.exc_info()[2]
@@ -140,9 +129,7 @@ def _called_with_wrong_args(f):
         # Delete tb to break a circular reference.
         # https://docs.python.org/2/library/sys.html#sys.exc_info
         del tb
-"""Check if the given string is a variable name or a function. Call
-    a function to get the app instance, or return the variable directly.
-"""
+
 
 def find_app_by_string(script_info, module, app_name):
     from . import Flask
@@ -215,9 +202,7 @@ def find_app_by_string(script_info, module, app_name):
         f" '{module.__name__}:{app_name}'."
     )
 
-"""Given a filename this will try to calculate the python path, add it
-    to the search path and return the actual module name that is expected.
-"""
+
 def prepare_import(path):
     path = os.path.realpath(path)
 

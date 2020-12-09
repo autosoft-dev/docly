@@ -22,3 +22,17 @@ def make_example(code_tokens):
                     target="")
         examples.append(ex)
     return examples
+
+
+class NewExample(object):
+
+    def __init__(self,
+                 source,
+                 target
+                 ):
+        self.source = source
+        self.target = target
+
+
+def make_new_example(code):
+    return [NewExample(source=code, target=None)]
