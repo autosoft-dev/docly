@@ -8,8 +8,8 @@ from docly.ioutils.console_printer import print_on_console
 SUPPORTED_PLATFORMS = ["linux", "darwin"]
 
 
-def inspect_and_download_latest_model(model_root: Path, download_url: str) -> bool:
-    model_file = "pytorch_model.bin"
+def inspect_and_download_latest_model(model_root: Path, download_url: str, is_old=False) -> bool:
+    model_file = "pytorch_model_new.bin" if not is_old else "pytorch_model.bin"
 
     if not model_root.exists():
         os.makedirs(str(model_root))
@@ -20,7 +20,7 @@ def inspect_and_download_latest_model(model_root: Path, download_url: str) -> bo
     if Path(model_root/ "model" / model_file).exists() and Path(model_root/ "model" / model_file).is_file():
         return True
     
-    print_on_console("There is no model. Downloading", color="green")
+    print_on_console("There is no model. Downloading (maybe because you chose to use the newer model)", color="green")
     download_from_url(download_url, str(Path(model_root/ "model" / model_file)))
     print_on_console("Download complete", color="green", emoji="heavy_check_mark")
     return True
