@@ -58,7 +58,7 @@ def load_model(model_path, is_old=False):
         if not torch.cuda.is_available():
             model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')), strict=False)
         else:
-            model.load_state_dict(torch.load(model_path, strict=False))
+            model.load_state_dict(torch.load(model_path), strict=False)
     if not torch.cuda.is_available():
         model.to("cpu")
     model.eval()
@@ -86,7 +86,10 @@ def predict_docstring(model, tokenizer, code_tokens, is_old):
 
     p=[]
     for batch in eval_dataloader:
-        batch = tuple(t.to('cpu') for t in batch)
+        if not torch.cuda.is_available():
+            batch = tuple(t.to('cpu') for t in batch)
+        else:
+            batch = tuple(t for t in batch)
         source_ids, source_mask = batch
 
         with torch.no_grad():
