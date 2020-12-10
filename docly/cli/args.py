@@ -18,6 +18,8 @@ def setup_cmdline_args_for_docly_gen(parser: ArgumentParser):
                         help="Configuration file for docly")
     parser.add_argument("--use-old-model", action="store_true",
                         help="Do you want to run the older model? Saves a second download, but bad quality")
+    parser.add_argument("--force", action="store_true",
+                        help="Applies the changes without an interactive propmt")
     # This is manmdatory
     parser.add_argument("files", type=str, nargs="+",
                          help="List the files/dirs you want to run it on")

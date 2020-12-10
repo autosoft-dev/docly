@@ -72,6 +72,9 @@ def _if_jupytext_is_installed():
 def _deal_with_result(args, table_rows, docstr_loc, ipynb_files):
     if not args.no_generate_diff and table_rows:
         print_results_as_table(table_rows)
+    elif args.force and docstr_loc:
+        _apply_diff(docstr_loc, args.no_generate_args_list, ipynb_files, args.docstring_style)
+        _remove_converted_python_files(ipynb_files)
     elif args.no_generate_diff and docstr_loc:
         if args.no_print_report:
             choice = query_yes_no("The diff has been generated, do you want to see the suggestions for missing Docstrings?")

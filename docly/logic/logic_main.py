@@ -50,10 +50,17 @@ def load_model(model_path, is_old=False):
                     eos_id=tokenizer.sep_token_id
                    )
     if is_old:
-        model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
+        if not torch.cuda.is_available():
+            model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
+        else:
+            model.load_state_dict(torch.load(model_path))
     else:
-        model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')), strict=False)
-    model.to("cpu")
+        if not torch.cuda.is_available():
+            model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')), strict=False)
+        else:
+            model.load_state_dict(torch.load(model_path, strict=False))
+    if not torch.cuda.is_available():
+        model.to("cpu")
     model.eval()
 
     return model, tokenizer
