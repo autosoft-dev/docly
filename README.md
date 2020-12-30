@@ -6,6 +6,10 @@
 
 Automatically generate docstrings for your python functions
 
+## Main documentation (FAQ and all)
+
+http://beta.thedocly.io/
+
 
 ## Installing
 
