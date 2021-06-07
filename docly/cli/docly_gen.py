@@ -191,8 +191,8 @@ def _process(args, model, tokenizer, ts_lib_path, config: DoclyConfig):
 
 
 def main():
-    if look_for_update():
-        print_on_console("There is an update available. Please run `pip install --upgrade docly`", color="green", emoji="rotating_light")
+    # if look_for_update():
+    #     print_on_console("There is an update available. Please run `pip install --upgrade docly`", color="green", emoji="rotating_light")
     _print_welcome()
     
     setup_cmdline_args_for_docly_gen(parser)
