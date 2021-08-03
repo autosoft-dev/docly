@@ -1,5 +1,7 @@
 # docly
 
+## Please note-------
+
 **Docly is not maintained anymore. Codist is in the process of shutting down. Sorry for the inconvenience**
 
 ![Docly - Automatic source code commenting](https://github.com/autosoft-dev/docly/blob/master/logo/docly.png)
